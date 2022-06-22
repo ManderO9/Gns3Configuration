@@ -64,7 +64,7 @@ public class HomeController : Controller
     /// <returns></returns>
     public IActionResult StaticRoute(string hostIpAddress, string port, string network, string mask, string nextHop)
     {
-        // If we passed in an unvalid network address
+        // If we passed in an invalid network address
         if (!IsValidIpAddress(network))
             // Return an error to the user
             return ShowError("invalid network address");
@@ -99,6 +99,101 @@ public class HomeController : Controller
         {
             // If we finished with no problems
             return new OkObjectResult(null);
+        }
+        // Otherwise
+        else
+        {
+            // TODO: add error page
+            return ShowError("something went wrong during execution of commands");
+        }
+
+    }
+
+    /// <summary>
+    /// Configures an interface, gives it an ip address and turns it on
+    /// </summary>
+    /// <param name="hostIpAddress">The ip address of the current machine</param>
+    /// <param name="port">The port to the console </param>
+    /// <param name="interfaceName">The name of the interface</param>
+    /// <param name="interfaceIpAddress">The ip address to give to this interface</param>
+    /// <param name="interfaceMask">The mask we want to give to this interface</param>
+    /// <returns></returns>
+    public IActionResult ConfigureInterface(string hostIpAddress, string port, string interfaceName, string interfaceIpAddress, string interfaceMask)
+    {
+        // If we passed in an invalid ip address
+        if (!IsValidIpAddress(interfaceIpAddress))
+            // Return an error to the user
+            return ShowError("invalid IP address for the interface");
+
+        // If the mask is invalid
+        if (!IsValidIpAddress(interfaceMask))
+            // Return an error to the user
+            return ShowError("invalid mask for the interface");
+
+        // Set the ip address of the host we want to connect to
+        HostIpAddress = hostIpAddress;
+
+        // Set the port number we want to access the console from
+        PortNumber = port;
+
+        // Get the commands to execute
+        this.Commands = GenerateInterfaceConfigurationCommands(interfaceName, interfaceIpAddress,interfaceMask);
+
+        // Log it 
+        mLogger.LogInformation("we are configuring an interface, giving it an ip address and turning it on");
+
+        // Execute the commands
+        var result = HandleCommandsExecution();
+
+        // If execution was successful
+        if (result)
+        {
+            // If we finished with no problems
+            return Ok(null);
+        }
+        // Otherwise
+        else
+        {
+            // TODO: add error page
+            return ShowError("something went wrong during execution of commands");
+        }
+
+    }
+
+    /// <summary>
+    /// Adds a network to the RIP routing table and configures RIP in the current router
+    /// </summary>
+    /// <param name="hostIpAddress">The ip address of the current machine</param>
+    /// <param name="port">The port to the console </param>
+    /// <param name="ripNetwork">The network ip address to add to the RIP routing table</param>
+    /// <returns></returns>
+    public IActionResult AddRipNetwork(string hostIpAddress, string port, string ripNetwork)
+    {
+        // If we passed in an invalid network
+        if (!IsValidIpAddress(ripNetwork))
+            // Return an error to the user
+            return ShowError("invalid IP address for the provided network");
+
+        // Set the ip address of the host we want to connect to
+        HostIpAddress = hostIpAddress;
+
+        // Set the port number we want to access the console from
+        PortNumber = port;
+
+        // Get the commands to execute
+        this.Commands = GenerateRIPConfigurationCommands(ripNetwork);
+
+        // Log it 
+        mLogger.LogInformation("we are configuring RIP, adding the network: " + ripNetwork);
+
+        // Execute the commands
+        var result = HandleCommandsExecution();
+
+        // If execution was successful
+        if (result)
+        {
+            // If we finished with no problems
+            return Ok(null);
         }
         // Otherwise
         else
@@ -199,12 +294,83 @@ public class HomeController : Controller
         // Add static address
         commands.Add("ip route " + network + " " + mask + " " + nextHop);
 
-        // Exit back to enable mode
+	// Exit from config mode
         commands.Add("exit");
 
+        // Return the commands
+        return commands;   
+	}
+
+    /// <summary>
+    /// Generates a list of commands that will give give an interface an ip address and turns it on
+    /// </summary>
+    /// <param name="interfaceName">The name of the interface</param>
+    /// <param name="interfaceIpAddress">The ip address to give to this interface</param>
+    /// <param name="interfaceMask">The mask we want to give to this interface</param>
+    /// <returns></returns>
+    private List<string> GenerateInterfaceConfigurationCommands(string interfaceName, string interfaceIpAddress, string interfaceMask)
+    {
+        // Create list of commands
+        var commands = new List<string>();
+
+        // Enable console
+        commands.Add("en");
+
+        // Configure terminal
+        commands.Add("conf t");
+
+        // Open interface configuratin mode
+        commands.Add("int " + interfaceName);
+
+        // Give it an ip address
+        commands.Add("ip address " + interfaceIpAddress + " " + interfaceMask);
+
+        // Turn it on
+        commands.Add("no shutdown");
+
+	// Exit back to config mode
+        commands.Add("exit");
+
+        // Go back to enable mode
+        commands.Add("end");
+
+        // Return the commands
+        return commands;   
+	}
+ 
+    /// <summary>
+    /// Generates a list of commands that will configure RIP in the router and add a network to it's routing table
+    /// </summary>
+    /// <param name="ripNetwork">The network ip address to add to the RIP routing table</param>
+    /// <returns></returns>
+    private List<string> GenerateRIPConfigurationCommands(string ripNetwork)
+    {
+        // Create list of commands
+        var commands = new List<string>();
+
+        // Enable console
+        commands.Add("en");
+
+        // Configure terminal
+        commands.Add("conf t");
+
+        // Open rip config mode
+        commands.Add("router rip");
+
+        // Add a network
+        commands.Add("network " + ripNetwork);
+
+        // Exit back to config mode
+        commands.Add("exit");
+
+        // Go back to enable mode
+        commands.Add("end");
+
+        // Return the commands
         return commands;
     }
 
+    
     #endregion
 
     #region Error Handler

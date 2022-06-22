@@ -1,31 +1,67 @@
 ﻿
+<h1>configuration page</h1>
 
-<h1>the main page</h1>
+<form mathod="post">
 
-<form mathod="post" action="/home/staticRoute">
+    <div>
+        <label for="hostIpAddress">Host Ip Address</label>
+        <input type="text" placeholder="Host Ip Address" name="hostIpAddress"/>
+    </div>
 
-<label for="hostIpAddress">Host Ip Address</label>
-<input type="text" placeholder="Host Ip Address" name="hostIpAddress"/>
-<br />
+    <div>
+        <label for="port">port</label>
+        <input type="text" placeholder="Port number" name="port"/>    
+    </div>    
 
-<label for="port">port</label>
-<input type="text" placeholder="Port number" name="port"/>
-<br />
+    <h2>configuration d'une route statique <br>
+        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    </h2>
 
-<label for="network">network</label>
-<input type="text" placeholder="network" name="network"/>
-<br />
+    <div>
+        <label for="network">network</label>
+        <input type="text" placeholder="network" name="network"/>
+    </div>
+    
+    <div>
+        <label for="mask">mask</label>
+        <input type="text" placeholder="mask" name="mask"/>
+    </div>
+    
+    <div>
+        <label for="nextHop">next hop</label>
+        <input type="text" placeholder="next hop" name="nextHop"/>    
+    </div>
 
-<label for="mask">mask</label>
-<input type="text" placeholder="mask" name="mask"/>
-<br />
+    <div>
+        <button type="submit" formaction="/home/staticRoute">add static route</button>
+    </div>
 
-<label for="nextHop">next hop</label>
-<input type="text" placeholder="next hop" name="nextHop"/>
-<br />
+    <h2>configuration rip<br>
+        ~~~~~~~~~~~~~~</h2>
+    <div>
+        <label for="interfaceName">interface name</label>
+        <input type="text" placeholder="Intarface name" name="interfaceName"/>
+    </div>
+    <div>
+        <label for="interfaceIpAddress">IP address</label>
+        <input type="text" placeholder="interface IP Address" name="interfaceIpAddress"/>
+    </div>
+    <div>
+        <label for="interfaceMask">Mask</label>
+        <input type="text" placeholder="interface Mask" name="interfaceMask"/>
+    </div>
+    <div>
+        <button type="submit" formaction="/home/configureInterface">configure interface</button>
+    </div>
 
-<button type="submit">add</button>
-
+    <div>
+        <label for="ripNetwork">network IP Adr</label>
+        <input type="text" placeholder="RIP network" name="ripNetwork"/>
+    </div>
+    <div>
+        <button type="submit" formaction="/home/addRipNetwork">add network</button>
+    </div>
+    
 </form>
 
 

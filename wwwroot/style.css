@@ -3,19 +3,131 @@
     background-color: black;
     margin: 0px;
     padding: 0px;
+    font-size: medium
+}
+
+h1 {
+    font-size: xx-large;
+    color: #8eff7d;
+    margin-top: 72px;
+    margin-left: 72px
 }
 
 form {
-    padding: 50px;
-    border: 2px solid white;
-    border-radius: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: ". host port"
+        "staticRouteTitle staticRouteTitle staticRouteTitle"
+        "network mask nextHop"
+        ". . createStaticRouteButton"
+        "ripTitle . ."
+        "interface interfaceIpAddress interfaceMask"
+        ". . configureInterfaceButton"
+        "ripNetwork . ."
+        ". . addRipNetworkButton ";
+    padding: 48px;
+    gap: 36px
 }
 
-input, label {
-    margin: 20px;
+form>*:nth-child(1) {
+    grid-area: host;
+    margin-bottom: 72px
 }
 
-button {
-    color: aqua;
-    background-color: indigo;
+form>*:nth-child(2) {
+    grid-area: port
+}
+
+form>*:nth-child(3) {
+    grid-area: staticRouteTitle
+}
+
+form>*:nth-child(4) {
+    grid-area: network
+}
+
+form>*:nth-child(5) {
+    grid-area: mask
+}
+
+form>*:nth-child(6) {
+    grid-area: nextHop
+}
+
+form>*:nth-child(7) {
+    grid-area: createStaticRouteButton
+}
+
+form>*:nth-child(8) {
+    grid-area: ripTitle
+}
+
+form>*:nth-child(9) {
+    grid-area: interface
+}
+
+form>*:nth-child(10) {
+    grid-area: interfaceIpAddress
+}
+
+form>*:nth-child(11) {
+    grid-area: interfaceMask
+}
+
+form>*:nth-child(12) {
+    grid-area: configureInterfaceButton
+}
+
+form>*:nth-child(13) {
+    grid-area: ripNetwork
+}
+
+form>*:nth-child(14) {
+    grid-area: addRipNetworkButton
+}
+
+form>h2 {
+    margin-top: 36px
+}
+
+form>div {
+    display: block;
+    text-align: right
+}
+
+form>div>input {
+    text-decoration: none;
+    padding: 9.6px;
+    border-radius: 9.6px;
+    margin: 0px 36px;
+    width: 158.4px;
+    color: white;
+    border: 2px solid white
+}
+
+form>div>label {
+    font-size: large
+}
+
+form>div>button {
+    background-color: #0debff;
+    color: black;
+    padding: 9.6px;
+    width: 180px;
+    border-radius: 9.6px;
+    border: none;
+    box-shadow: 0px 0px 16px #0debff;
+    margin: 0px 36px;
+    margin-bottom: 72px
+}
+
+form>div>button:hover {
+    box-shadow: 0px 0px 16px #8eff7d;
+    background-color: #8eff7d;
+    cursor: pointer
+}
+
+form>h2 {
+    color: #0debff;
+    font-size: x-large
 }
