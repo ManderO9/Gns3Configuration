@@ -1,2 +1,55 @@
 ﻿
-<p>privacy page dude</p>
+<h1>configuration page</h1>
+
+<form mathod="post">
+        <div>
+        <label for="hostIpAddress">Host Ip Address</label>
+        <input type="text" placeholder="Host Ip Address" name="hostIpAddress"/>
+    </div>
+
+    <div>
+        <label for="port">port</label>
+        <input type="text" placeholder="Port number" name="port"/>    
+    </div>  
+    
+
+        <h2>configuration OSPF<br>
+        ~~~~~~~~~~~~~~~~~</h2>
+    <div>
+        <label for="interfaceName">interface name</label>
+        <input type="text" placeholder="Intarface name" name="interfaceName"/>
+    </div>
+    <div>
+        <label for="interfaceIpAddress">IP address</label>
+        <input type="text" placeholder="interface IP Address" name="interfaceIpAddress"/>
+    </div>
+    <div>
+        <label for="interfaceMask">Mask</label>
+        <input type="text" placeholder="interface Mask" name="interfaceMask"/>
+    </div>
+    <div>
+        <button type="submit" formaction="/home/configureInterface">configure interface</button>
+    </div>
+
+     
+    <div>
+        <label for="id">Process ID</label>
+        <input type="text" placeholder="Process ID" name="id"/>
+    </div>
+    <div>
+        <label for="OSPFNetwork">network IP Adr</label>
+        <input type="text" placeholder="OSPF network" name="OSPFNetwork"/>
+    </div>
+     <div>
+        <label for="WildcardMask">Wildcard mask</label>
+        <input type="text" placeholder="Wildcard mask" name="WildcardMask"/>
+    </div>
+        <div>
+        <label for="area">Area Number</label>
+        <input type="text" placeholder="Area Number" name="area"/>
+    </div>
+    <div>
+        <button type="submit" formaction="/home/addOSPFNetwork">add network</button>
+    </div>
+    
+</form>

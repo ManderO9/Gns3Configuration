@@ -204,6 +204,44 @@ public class HomeController : Controller
 
     }
 
+      public IActionResult AddOSPFNetwork(string hostIpAddress, string port, string OSPFNetwork,string WildcardMask,string id,string area)
+    {
+        // If we passed in an invalid network
+        if (!IsValidIpAddress(OSPFNetwork))
+            // Return an error to the user
+            return ShowError("invalid IP address for the provided network");
+
+        // Set the ip address of the host we want to connect to
+        HostIpAddress = hostIpAddress;
+
+        // Set the port number we want to access the console from
+        PortNumber = port;
+    
+
+        // Get the commands to execute
+        this.Commands = GenerateOSPFConfigurationCommands(OSPFNetwork,WildcardMask,id,area);
+
+        // Log it 
+        mLogger.LogInformation("we are configuring OSPF, adding the network: " + OSPFNetwork);
+
+        // Execute the commands
+        var result = HandleCommandsExecution();
+
+        // If execution was successful
+        if (result)
+        {
+            // If we finished with no problems
+            return Ok(null);
+        }
+        // Otherwise
+        else
+        {
+            // TODO: add error page
+            return ShowError("something went wrong during execution of commands");
+        }
+
+    }
+
     #endregion
 
     #region Constructor
@@ -369,7 +407,32 @@ public class HomeController : Controller
         // Return the commands
         return commands;
     }
+private List<string> GenerateOSPFConfigurationCommands(string OSPFNetwork, string WildcardMask,string id,string area)
+    {
+        // Create list of commands
+        var commands = new List<string>();
 
+        // Enable console
+        commands.Add("en");
+
+        // Configure terminal
+        commands.Add("conf t");
+
+        // Open ospf config mode
+        commands.Add("router ospf " + id);
+
+        // Add a network
+        commands.Add("network " + OSPFNetwork + " " + WildcardMask + " area "+ area);
+
+        // Exit back to config mode
+        commands.Add("exit");
+
+        // Go back to enable mode
+        commands.Add("end");
+
+        // Return the commands
+        return commands;
+    }
     
     #endregion
 
