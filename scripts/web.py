@@ -20,7 +20,7 @@ tn.write(str.encode("\r\n"))
 # for each command
 for n in range(3,number):
 	# wait a little
-	time.sleep(0.05)
+	time.sleep(0.1)
 	# run it
 	tn.write(str.encode(sys.argv[n] + "\r\n"))
 

@@ -15,16 +15,23 @@ h1 {
 
 form {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas: ". host port"
-        "staticRouteTitle staticRouteTitle staticRouteTitle"
-        "network mask nextHop"
-        ". . createStaticRouteButton"
-        "ripTitle . ."
-        "interface interfaceIpAddress interfaceMask"
-        ". . configureInterfaceButton"
-        "ripNetwork . ."
-        ". . addRipNetworkButton ";
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-areas: ". host port ."
+        "staticRouteTitle staticRouteTitle staticRouteTitle ."
+        "network mask nextHop ."
+        ". . createStaticRouteButton ."
+        "ripTitle . . ."
+        "interface interfaceIpAddress interfaceMask ."
+        ". . configureInterfaceButton ."
+        "ripNetwork . . ."
+        ". . addRipNetworkButton ."
+        "ospfTitle . . ."
+        "processId ospfNetwork wildCardMask ."
+        "areaNumber . . ."
+        ". . addOspfNetwork ."
+        "configurationPcTitle . . ."
+        "configurationPcAddress configurationPcGateway . ."
+        ". . configurationPcAddButton .";
     padding: 48px;
     gap: 36px
 }
@@ -86,23 +93,62 @@ form>*:nth-child(14) {
     grid-area: addRipNetworkButton
 }
 
+form>*:nth-child(15) {
+    grid-area: ospfTitle
+}
+
+form>*:nth-child(16) {
+    grid-area: processId
+}
+
+form>*:nth-child(17) {
+    grid-area: ospfNetwork
+}
+
+form>*:nth-child(18) {
+    grid-area: wildCardMask
+}
+
+form>*:nth-child(19) {
+    grid-area: areaNumber
+}
+
+form>*:nth-child(20) {
+    grid-area: addOspfNetwork
+}
+
+form>*:nth-child(21) {
+    grid-area: configurationPcTitle
+}
+
+form>*:nth-child(22) {
+    grid-area: configurationPcAddress
+}
+
+form>*:nth-child(23) {
+    grid-area: configurationPcGateway
+}
+
+form>*:nth-child(24) {
+    grid-area: configurationPcAddButton
+}
+
 form>h2 {
     margin-top: 36px
 }
 
 form>div {
-    display: block;
-    text-align: right
+    display: block
 }
 
 form>div>input {
     text-decoration: none;
     padding: 9.6px;
     border-radius: 9.6px;
-    margin: 0px 36px;
-    width: 158.4px;
+    width: 85%;
     color: white;
-    border: 2px solid white
+    border: 2px solid white;
+    margin-top: 24px
 }
 
 form>div>label {
@@ -113,11 +159,10 @@ form>div>button {
     background-color: #0debff;
     color: black;
     padding: 9.6px;
-    width: 180px;
+    width: 93%;
     border-radius: 9.6px;
     border: none;
     box-shadow: 0px 0px 16px #0debff;
-    margin: 0px 36px;
     margin-bottom: 72px
 }
 
@@ -130,4 +175,47 @@ form>div>button:hover {
 form>h2 {
     color: #0debff;
     font-size: x-large
+}
+
+.NotificationsContainer {
+    pointer-events: none;
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 360px;
+    height: 95vh;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center
+}
+
+.NotificationsContainer>div {
+    background-color: rgba(128, 128, 128, 0.2);
+    width: 70%;
+    padding: 16px;
+    border-radius: 9.6px;
+    margin-bottom: 24px;
+    transition: opacity 400ms ease-in, transform 300ms ease-in;
+    transform: translateY(30%);
+    opacity: 0
+}
+
+.NotificationsContainer>div.appear {
+    transform: translateY(0);
+    opacity: 1
+}
+
+.NotificationsContainer>div.disappear {
+    transform: translateY(-30%);
+    opacity: 0
+}
+
+.NotificationsContainer>div.Error {
+    color: red
+}
+
+.NotificationsContainer>div.Command {
+    color: lime
 }

@@ -137,7 +137,7 @@ public class HomeController : Controller
         PortNumber = port;
 
         // Get the commands to execute
-        this.Commands = GenerateInterfaceConfigurationCommands(interfaceName, interfaceIpAddress,interfaceMask);
+        this.Commands = GenerateInterfaceConfigurationCommands(interfaceName, interfaceIpAddress, interfaceMask);
 
         // Log it 
         mLogger.LogInformation("we are configuring an interface, giving it an ip address and turning it on");
@@ -204,7 +204,7 @@ public class HomeController : Controller
 
     }
 
-      public IActionResult AddOSPFNetwork(string hostIpAddress, string port, string OSPFNetwork,string WildcardMask,string id,string area)
+    public IActionResult AddOSPFNetwork(string hostIpAddress, string port, string OSPFNetwork, string WildcardMask, string id, string area)
     {
         // If we passed in an invalid network
         if (!IsValidIpAddress(OSPFNetwork))
@@ -216,10 +216,10 @@ public class HomeController : Controller
 
         // Set the port number we want to access the console from
         PortNumber = port;
-    
+
 
         // Get the commands to execute
-        this.Commands = GenerateOSPFConfigurationCommands(OSPFNetwork,WildcardMask,id,area);
+        this.Commands = GenerateOSPFConfigurationCommands(OSPFNetwork, WildcardMask, id, area);
 
         // Log it 
         mLogger.LogInformation("we are configuring OSPF, adding the network: " + OSPFNetwork);
@@ -241,6 +241,46 @@ public class HomeController : Controller
         }
 
     }
+
+    public IActionResult ConfigurePcInterface(string hostIpAddress, string port, string PcIpAddress, string GateWay)
+        {
+            if (!IsValidIpAddress(GateWay))
+                // Return an error to the user
+                return ShowError("invalid gateway");
+
+            if (!IsValidIpAddress(PcIpAddress))
+                // Return an error to the user
+                return ShowError("invalid address/mask for pc");
+
+            // Set the ip address of the host we want to connect to
+            HostIpAddress = hostIpAddress;
+
+            // Set the port number we want to access the console from
+            PortNumber = port;
+
+            // Get the commands to execute
+            this.Commands = GeneratePcInterfaceConfiguration(PcIpAddress,GateWay);
+
+            // Log it 
+            mLogger.LogInformation("we are configuring Pc interface ");
+
+            // Execute the commands
+            var result = HandleCommandsExecution();
+
+            // If execution was successful
+            if (result)
+            {
+                // If we finished with no problems
+                return Ok(null);
+            }
+            // Otherwise
+            else
+            {
+                // TODO: add error page
+                return ShowError("something went wrong during execution of commands");
+            }
+
+        }
 
     #endregion
 
@@ -265,6 +305,32 @@ public class HomeController : Controller
     /// <returns>True if execution has succeeded, false otherwise</returns>
     private bool HandleCommandsExecution()
     {
+        // If we don't have a host
+        if (string.IsNullOrEmpty(HostIpAddress))
+        {
+            // Show error to the user
+            NotificationsController.AddNotification("No host entered", NotificationType.Error);
+
+            // Return unsuccessful
+            return false;
+        }
+        
+        // If we don't have a port
+        if (string.IsNullOrEmpty(PortNumber))
+        {
+            // Show error to the user
+            NotificationsController.AddNotification("No port number entered", NotificationType.Error);
+
+            // Return unsuccessful
+            return false;
+        }
+
+        // For each command we gonna enter
+        Commands.ForEach(command=>{
+            // Display it to the user
+            NotificationsController.AddNotification(command,NotificationType.NewCommand);
+        });
+
         try
         {
             // Send the commands to confiugure a specific machine
@@ -273,6 +339,7 @@ public class HomeController : Controller
         catch (Exception ex)
         {
             // Log the error
+            mLogger.LogCritical("error when running the python script: ");
             mLogger.LogCritical(ex.Message);
 
             // Return false indicating that the configuration has not succeeded
@@ -332,12 +399,12 @@ public class HomeController : Controller
         // Add static address
         commands.Add("ip route " + network + " " + mask + " " + nextHop);
 
-	// Exit from config mode
+        // Exit from config mode
         commands.Add("exit");
 
         // Return the commands
-        return commands;   
-	}
+        return commands;
+    }
 
     /// <summary>
     /// Generates a list of commands that will give give an interface an ip address and turns it on
@@ -366,16 +433,16 @@ public class HomeController : Controller
         // Turn it on
         commands.Add("no shutdown");
 
-	// Exit back to config mode
+        // Exit back to config mode
         commands.Add("exit");
 
         // Go back to enable mode
         commands.Add("end");
 
         // Return the commands
-        return commands;   
-	}
- 
+        return commands;
+    }
+
     /// <summary>
     /// Generates a list of commands that will configure RIP in the router and add a network to it's routing table
     /// </summary>
@@ -407,7 +474,7 @@ public class HomeController : Controller
         // Return the commands
         return commands;
     }
-private List<string> GenerateOSPFConfigurationCommands(string OSPFNetwork, string WildcardMask,string id,string area)
+    private List<string> GenerateOSPFConfigurationCommands(string OSPFNetwork, string WildcardMask, string id, string area)
     {
         // Create list of commands
         var commands = new List<string>();
@@ -422,7 +489,7 @@ private List<string> GenerateOSPFConfigurationCommands(string OSPFNetwork, strin
         commands.Add("router ospf " + id);
 
         // Add a network
-        commands.Add("network " + OSPFNetwork + " " + WildcardMask + " area "+ area);
+        commands.Add("network " + OSPFNetwork + " " + WildcardMask + " area " + area);
 
         // Exit back to config mode
         commands.Add("exit");
@@ -433,7 +500,18 @@ private List<string> GenerateOSPFConfigurationCommands(string OSPFNetwork, strin
         // Return the commands
         return commands;
     }
-    
+        
+    private List<string> GeneratePcInterfaceConfiguration(string PcIpAddress, string GateWay)
+        {
+            // Create list of commands
+            var commands = new List<string>();
+
+            // Give it an ip address
+            commands.Add("ip " + PcIpAddress);
+
+            return commands;   
+        }
+
     #endregion
 
     #region Error Handler
@@ -444,7 +522,12 @@ private List<string> GenerateOSPFConfigurationCommands(string OSPFNetwork, strin
     /// <param name="errorMessage">The error message to show</param>
     public IActionResult ShowError(string errorMessage)
     {
-        return Redirect("/error/" + errorMessage);
+        // Show the error to the user
+        NotificationsController.AddNotification(errorMessage, NotificationType.Error);
+        
+        // Return nothing
+        return Ok(null);
+        //return Redirect("/error/" + errorMessage);
     }
 
     #endregion

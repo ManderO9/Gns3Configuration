@@ -62,6 +62,44 @@
         <button type="submit" formaction="/home/addRipNetwork">add network</button>
     </div>
     
+    <h2>configuration OSPF<br>
+    ~~~~~~~~~~~~~~~~</h2>
+    <div>
+        <label for="id">Process ID</label>
+        <input type="text" placeholder="Process ID" name="id"/>
+    </div>
+    <div>
+        <label for="OSPFNetwork">network IP Adr</label>
+        <input type="text" placeholder="OSPF network" name="OSPFNetwork"/>
+    </div>
+     <div>
+        <label for="WildcardMask">Wildcard mask</label>
+        <input type="text" placeholder="Wildcard mask" name="WildcardMask"/>
+    </div>
+        <div>
+        <label for="area">Area Number</label>
+        <input type="text" placeholder="Area Number" name="area"/>
+    </div>
+    <div>
+        <button type="submit" formaction="/home/addOSPFNetwork">add network</button>
+    </div>
+
+   <h2>configuration PC<br>
+    ~~~~~~~~~~~~~~</h2>
+    <div>
+        <label for="PcIpAddress">IP address</label>
+        <input type="text" placeholder="address/mask" name="PcIpAddress"/>
+    </div>
+    <div>
+        <label for="GateWay">Gateway</label>
+        <input type="text" placeholder="gateway" name="GateWay"/>
+    </div>
+    <div>
+        <button type="submit" formaction="/home/configurePcInterface">configure Pc interface</button>
+    </div>
+
 </form>
+
+<div class="NotificationsContainer"></div>
 
 
