@@ -197,7 +197,7 @@ form>h2 {
 }
 
 .NotificationsContainer>div {
-    background-color: rgba(128, 128, 128, 0.2);
+    background-color:  whitesmoke; /* rgba(128, 128, 128, 0.2);*/
     width: 70%;
     padding: 16px;
     border-radius: 9.6px;
@@ -218,9 +218,9 @@ form>h2 {
 }
 
 .NotificationsContainer>div.Error {
-    color: red
+    color: rgba(255, 0, 0, 0.6);
 }
 
 .NotificationsContainer>div.Command {
-    color: lime
+    color: black;
 }
