@@ -20,9 +20,10 @@ form {
         "staticRouteTitle staticRouteTitle staticRouteTitle ."
         "network mask nextHop ."
         ". . createStaticRouteButton ."
-        "ripTitle . . ."
+        "interfaceTitle interfaceTitle . ."
         "interface interfaceIpAddress interfaceMask ."
         ". . configureInterfaceButton ."
+        "ripTitle . . ."
         "ripNetwork . . ."
         ". . addRipNetworkButton ."
         "ospfTitle . . ."
@@ -66,7 +67,7 @@ form>*:nth-child(7) {
 }
 
 form>*:nth-child(8) {
-    grid-area: ripTitle
+    grid-area: interfaceTitle
 }
 
 form>*:nth-child(9) {
@@ -86,50 +87,54 @@ form>*:nth-child(12) {
 }
 
 form>*:nth-child(13) {
-    grid-area: ripNetwork
+    grid-area: ripTitle
 }
 
 form>*:nth-child(14) {
-    grid-area: addRipNetworkButton
+    grid-area: ripNetwork
 }
 
 form>*:nth-child(15) {
-    grid-area: ospfTitle
+    grid-area: addRipNetworkButton
 }
 
 form>*:nth-child(16) {
-    grid-area: processId
+    grid-area: ospfTitle
 }
 
 form>*:nth-child(17) {
-    grid-area: ospfNetwork
+    grid-area: processId
 }
 
 form>*:nth-child(18) {
-    grid-area: wildCardMask
+    grid-area: ospfNetwork
 }
 
 form>*:nth-child(19) {
-    grid-area: areaNumber
+    grid-area: wildCardMask
 }
 
 form>*:nth-child(20) {
-    grid-area: addOspfNetwork
+    grid-area: areaNumber
 }
 
 form>*:nth-child(21) {
-    grid-area: configurationPcTitle
+    grid-area: addOspfNetwork
 }
 
 form>*:nth-child(22) {
-    grid-area: configurationPcAddress
+    grid-area: configurationPcTitle
 }
 
 form>*:nth-child(23) {
-    grid-area: configurationPcGateway
+    grid-area: configurationPcAddress
 }
 
 form>*:nth-child(24) {
+    grid-area: configurationPcGateway
+}
+
+form>*:nth-child(25) {
     grid-area: configurationPcAddButton
 }
 

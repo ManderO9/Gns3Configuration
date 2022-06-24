@@ -351,7 +351,7 @@ public class HomeController : Controller
     }
 
     /// <summary>
-    /// Returns if the passed in address is a valid ip address
+    /// Returns true if the passed in address is a valid ip address
     /// </summary>
     /// <param name="address">The address to check</param>
     /// <returns>True if it's valid</returns>
@@ -372,6 +372,16 @@ public class HomeController : Controller
         else
             // Return if the IP address matches the pattern
             return check.IsMatch(address, 0);
+    }
+
+    public bool IsValidMask(string address)
+    {
+        // If it's not a valid ip address
+        if(!IsValidIpAddress(address))
+        // Return false, it's not a mask
+        return false;
+
+        
     }
 
     #endregion
