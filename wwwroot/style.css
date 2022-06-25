@@ -218,7 +218,7 @@ form>h2 {
 }
 
 .NotificationsContainer>div.Error {
-    color: rgba(255, 0, 0, 0.6);
+    color: rgba(255, 0, 0, 0.7);
 }
 
 .NotificationsContainer>div.Command {

@@ -248,11 +248,12 @@ public class HomeController : Controller
 
     public IActionResult ConfigurePcInterface(string hostIpAddress, string port, string PcIpAddress, string GateWay)
     {
+        var IP  = PcIpAddress.Split("/")[0];
         if (!IsValidIpAddress(GateWay))
             // Return an error to the user
             return ShowError("invalid gateway");
 
-        if (!IsValidIpAddress(PcIpAddress))
+        if (!IsValidIpAddress(IP))
             // Return an error to the user
             return ShowError("invalid address/mask for pc");
 
@@ -570,7 +571,7 @@ public class HomeController : Controller
         var commands = new List<string>();
 
         // Give it an ip address
-        commands.Add("ip " + PcIpAddress);
+        commands.Add("ip " + PcIpAddress + " " + GateWay);
 
         return commands;
     }
