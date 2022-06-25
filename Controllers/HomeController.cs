@@ -48,6 +48,10 @@ public class HomeController : Controller
         return View();
     }
 
+    /// <summary>
+    /// Returns the privacy page
+    /// </summary>
+    /// <returns></returns>
     public IActionResult Privacy()
     {
         return View();
@@ -70,7 +74,7 @@ public class HomeController : Controller
             return ShowError("invalid network address");
 
         // If the mask is invalid
-        if (!IsValidIpAddress(mask))
+        if (!IsValidMask(mask))
             // Return an error to the user
             return ShowError("invalid mask");
 
@@ -103,7 +107,7 @@ public class HomeController : Controller
         // Otherwise
         else
         {
-            // TODO: add error page
+            // Show error
             return ShowError("something went wrong during execution of commands");
         }
 
@@ -126,7 +130,7 @@ public class HomeController : Controller
             return ShowError("invalid IP address for the interface");
 
         // If the mask is invalid
-        if (!IsValidIpAddress(interfaceMask))
+        if (!IsValidMask(interfaceMask))
             // Return an error to the user
             return ShowError("invalid mask for the interface");
 
@@ -154,7 +158,7 @@ public class HomeController : Controller
         // Otherwise
         else
         {
-            // TODO: add error page
+            // Show error
             return ShowError("something went wrong during execution of commands");
         }
 
@@ -198,7 +202,7 @@ public class HomeController : Controller
         // Otherwise
         else
         {
-            // TODO: add error page
+            // Show error
             return ShowError("something went wrong during execution of commands");
         }
 
@@ -236,51 +240,51 @@ public class HomeController : Controller
         // Otherwise
         else
         {
-            // TODO: add error page
+            // Show error
             return ShowError("something went wrong during execution of commands");
         }
 
     }
 
     public IActionResult ConfigurePcInterface(string hostIpAddress, string port, string PcIpAddress, string GateWay)
+    {
+        if (!IsValidIpAddress(GateWay))
+            // Return an error to the user
+            return ShowError("invalid gateway");
+
+        if (!IsValidIpAddress(PcIpAddress))
+            // Return an error to the user
+            return ShowError("invalid address/mask for pc");
+
+        // Set the ip address of the host we want to connect to
+        HostIpAddress = hostIpAddress;
+
+        // Set the port number we want to access the console from
+        PortNumber = port;
+
+        // Get the commands to execute
+        this.Commands = GeneratePcInterfaceConfiguration(PcIpAddress, GateWay);
+
+        // Log it 
+        mLogger.LogInformation("we are configuring Pc interface ");
+
+        // Execute the commands
+        var result = HandleCommandsExecution();
+
+        // If execution was successful
+        if (result)
         {
-            if (!IsValidIpAddress(GateWay))
-                // Return an error to the user
-                return ShowError("invalid gateway");
-
-            if (!IsValidIpAddress(PcIpAddress))
-                // Return an error to the user
-                return ShowError("invalid address/mask for pc");
-
-            // Set the ip address of the host we want to connect to
-            HostIpAddress = hostIpAddress;
-
-            // Set the port number we want to access the console from
-            PortNumber = port;
-
-            // Get the commands to execute
-            this.Commands = GeneratePcInterfaceConfiguration(PcIpAddress,GateWay);
-
-            // Log it 
-            mLogger.LogInformation("we are configuring Pc interface ");
-
-            // Execute the commands
-            var result = HandleCommandsExecution();
-
-            // If execution was successful
-            if (result)
-            {
-                // If we finished with no problems
-                return Ok(null);
-            }
-            // Otherwise
-            else
-            {
-                // TODO: add error page
-                return ShowError("something went wrong during execution of commands");
-            }
-
+            // If we finished with no problems
+            return Ok(null);
         }
+        // Otherwise
+        else
+        {
+            // Show error
+            return ShowError("something went wrong during execution of commands");
+        }
+
+    }
 
     #endregion
 
@@ -314,7 +318,7 @@ public class HomeController : Controller
             // Return unsuccessful
             return false;
         }
-        
+
         // If we don't have a port
         if (string.IsNullOrEmpty(PortNumber))
         {
@@ -326,9 +330,10 @@ public class HomeController : Controller
         }
 
         // For each command we gonna enter
-        Commands.ForEach(command=>{
+        Commands.ForEach(command =>
+        {
             // Display it to the user
-            NotificationsController.AddNotification(command,NotificationType.NewCommand);
+            NotificationsController.AddNotification(command, NotificationType.NewCommand);
         });
 
         try
@@ -374,14 +379,61 @@ public class HomeController : Controller
             return check.IsMatch(address, 0);
     }
 
+    /// <summary>
+    /// Returns true if the passed in address is a valid mask
+    /// </summary>
+    /// <param name="address">The address to check</param>
+    /// <returns></returns>
     public bool IsValidMask(string address)
     {
         // If it's not a valid ip address
-        if(!IsValidIpAddress(address))
-        // Return false, it's not a mask
-        return false;
+        if (!IsValidIpAddress(address))
+            // Return false, it's not a mask
+            return false;
 
-        
+        // Get all four values
+        var values = address.Split(".");
+
+        // Turn the string values to integers
+        var integers = values.Select(x => int.Parse(x)).ToList();
+
+        // Get the binary representation of the address
+        var binary = Convert.ToString(integers[0], 2).PadLeft(8, '0') + Convert.ToString(integers[1], 2).PadLeft(8, '0') +
+            Convert.ToString(integers[2], 2).PadLeft(8, '0') + Convert.ToString(integers[3], 2).PadLeft(8, '0');
+
+        // Don't allow empty masks (only zeros)
+        if (binary[0] == '0')
+            return false;
+
+        // Start with only 1 bits as true
+        var onlyOnes = true;
+
+        // For each bit in the binary number from left to right
+        for (var i = 0; i < binary.Length; i++)
+        {
+            // Get the current bit
+            var currentBit = binary[i];
+
+            // If the current bit is a zero
+            if (currentBit == '0')
+            {
+                // Mark only ones as false
+                onlyOnes = false;
+            }
+            // Otherwise, if it's a one
+            else
+            {
+                // If we found zeros before it...
+                if (!onlyOnes)
+                    // It's not a valid mask, return false
+                    return false;
+            }
+
+        }
+
+        // If we got here we have a valid mask
+        return true;
+
     }
 
     #endregion
@@ -484,6 +536,7 @@ public class HomeController : Controller
         // Return the commands
         return commands;
     }
+  
     private List<string> GenerateOSPFConfigurationCommands(string OSPFNetwork, string WildcardMask, string id, string area)
     {
         // Create list of commands
@@ -510,17 +563,17 @@ public class HomeController : Controller
         // Return the commands
         return commands;
     }
-        
+
     private List<string> GeneratePcInterfaceConfiguration(string PcIpAddress, string GateWay)
-        {
-            // Create list of commands
-            var commands = new List<string>();
+    {
+        // Create list of commands
+        var commands = new List<string>();
 
-            // Give it an ip address
-            commands.Add("ip " + PcIpAddress);
+        // Give it an ip address
+        commands.Add("ip " + PcIpAddress);
 
-            return commands;   
-        }
+        return commands;
+    }
 
     #endregion
 
@@ -534,7 +587,7 @@ public class HomeController : Controller
     {
         // Show the error to the user
         NotificationsController.AddNotification(errorMessage, NotificationType.Error);
-        
+
         // Return nothing
         return Ok(null);
         //return Redirect("/error/" + errorMessage);
